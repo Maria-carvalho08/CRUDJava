@@ -7,6 +7,13 @@ public class AlunoDTO {
     private String curso;
     private float notaFinal;
 
+    public AlunoDTO(int id, String nome, int idade, String curso, float notaFinal) {
+        this.id = id;
+        this.nome = nome;
+        this.idade = idade;
+        this.curso = curso;
+        this.notaFinal = notaFinal;
+    }
     public int getId() {
         return id;
     }

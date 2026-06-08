@@ -3,16 +3,19 @@ package com.template;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AlunoDAO {
 
-    private static final Logger logger = Logger.getLogger(AlunoDAO.class.getName());
+    private static final Logger logger =
+            Logger.getLogger(AlunoDAO.class.getName());
 
     public void inserir(AlunoDTO aluno) {
 
-        String sql = "INSERT INTO alunos (nome, idade, curso, nota_final) VALUES (?, ?, ?, ?)";
+        String sql =
+                "INSERT INTO alunos (nome, idade, curso, nota_final) VALUES (?, ?, ?, ?)";
 
         try (Connection con = Conexao.conectar();
              PreparedStatement stmt = con.prepareStatement(sql)) {
@@ -25,11 +28,15 @@ public class AlunoDAO {
             stmt.executeUpdate();
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Erro ao inserir aluno: " + e.getMessage(), e);
+
+            logger.log(Level.SEVERE,
+                    "Erro ao inserir aluno: " + e.getMessage(), e);
         }
     }
 
-    public void listar() {
+    public ArrayList<AlunoDTO> listar() {
+
+        ArrayList<AlunoDTO> lista = new ArrayList<>();
 
         String sql = "SELECT * FROM alunos";
 
@@ -38,21 +45,31 @@ public class AlunoDAO {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                logger.info("ID: " + rs.getInt("id"));
-                logger.info("Nome: " + rs.getString("nome"));
-                logger.info("Idade: " + rs.getInt("idade"));
-                logger.info("Curso: " + rs.getString("curso"));
-                logger.info("Nota Final: " + rs.getFloat("nota_final"));
+
+                AlunoDTO aluno = new AlunoDTO(
+                        rs.getInt("id"),
+                        rs.getString("nome"),
+                        rs.getInt("idade"),
+                        rs.getString("curso"),
+                        rs.getFloat("nota_final")
+                );
+
+                lista.add(aluno);
             }
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Erro ao listar alunos: " + e.getMessage(), e);
+
+            logger.log(Level.SEVERE,
+                    "Erro ao listar alunos: " + e.getMessage(), e);
         }
+
+        return lista;
     }
 
     public void atualizar(AlunoDTO aluno) {
 
-        String sql = "UPDATE alunos SET nome=?, idade=?, curso=?, nota_final=? WHERE id=?";
+        String sql =
+                "UPDATE alunos SET nome=?, idade=?, curso=?, nota_final=? WHERE id=?";
 
         try (Connection con = Conexao.conectar();
              PreparedStatement stmt = con.prepareStatement(sql)) {
@@ -66,7 +83,9 @@ public class AlunoDAO {
             stmt.executeUpdate();
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Erro ao atualizar aluno: " + e.getMessage(), e);
+
+            logger.log(Level.SEVERE,
+                    "Erro ao atualizar aluno: " + e.getMessage(), e);
         }
     }
 
@@ -78,10 +97,13 @@ public class AlunoDAO {
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
+
             stmt.executeUpdate();
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Erro ao excluir aluno: " + e.getMessage(), e);
+
+            logger.log(Level.SEVERE,
+                    "Erro ao excluir aluno: " + e.getMessage(), e);
         }
     }
 }

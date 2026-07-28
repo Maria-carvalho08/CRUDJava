@@ -1,5 +1,8 @@
-package com.template;
+package com.template.controller;
 
+import com.template.model.dao.AlunoDAO;
+import com.template.model.dto.AlunoDTO;
+import com.template.util.DialogUtil;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,11 +23,9 @@ public class MainController {
     @FXML private TableColumn<AlunoDTO, Integer> colIdade;
     @FXML private TableColumn<AlunoDTO, String> colCurso;
     @FXML private TableColumn<AlunoDTO, Float> colNotaFinal;
-
-    // NOVO: Label para mensagens de status na tela
     @FXML private Label lblMensagem;
 
-    AlunoDAO alunoDAO = new AlunoDAO();
+    AlunoDAO estudante = new AlunoDAO();
 
     // Função para atualizar o Label de mensagem com cor
     private void atualizarMensagem(String texto, boolean erro) {
@@ -58,7 +59,7 @@ public class MainController {
                         txtCurso.getText(),
                         Float.parseFloat(txtNotaFinal.getText().replace(",", "."))
                 );
-                alunoDAO.inserir(aluno);
+                estudante.inserir(aluno);
                 atualizarMensagem("Aluno cadastrado com sucesso!", false);
                 carregarAlunos();
                 btnLimparAction(null);
@@ -71,20 +72,21 @@ public class MainController {
     @FXML
     private void btnDeletarAction(ActionEvent event) {
         AlunoDTO selecionado = tblAlunos.getSelectionModel().getSelectedItem();
-        if (selecionado != null) {
-            // SOLICITAR CONFIRMAÇÃO
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmar Exclusão");
-            alert.setHeaderText("Excluir Aluno");
-            alert.setContentText("Tem certeza que deseja excluir o aluno: " + selecionado.getNome() + "?");
 
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                alunoDAO.excluir(selecionado.getId());
+        if (selecionado != null) {
+
+            boolean confirmou = DialogUtil.showConfirmation(
+                    "Confirmar Exclusão",
+                    "Tem certeza que deseja excluir o aluno: " + selecionado.getNome() + "?"
+            );
+
+            if (confirmou) {
+                estudante.excluir(selecionado.getId());
                 atualizarMensagem("Aluno excluído com sucesso!", false);
                 carregarAlunos();
                 btnLimparAction(null);
             }
+
         } else {
             atualizarMensagem("Selecione um aluno para excluir!", true);
         }
@@ -93,31 +95,37 @@ public class MainController {
     @FXML
     private void btnAtualizarAction(ActionEvent event) {
         AlunoDTO selecionado = tblAlunos.getSelectionModel().getSelectedItem();
-        if (selecionado != null) {
-            if (validarCampos()) {
-                // SOLICITAR CONFIRMAÇÃO
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Confirmar Atualização");
-                alert.setHeaderText("Atualizar Dados");
-                alert.setContentText("Deseja salvar as alterações para " + selecionado.getNome() + "?");
 
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (selecionado != null) {
+
+            if (validarCampos()) {
+
+                boolean confirmou = DialogUtil.showConfirmation(
+                        "Confirmar Atualização",
+                        "Deseja salvar as alterações para "
+                                + selecionado.getNome() + "?"
+                );
+
+                if (confirmou) {
                     selecionado.setNome(txtNome.getText());
                     selecionado.setIdade(Integer.parseInt(txtIdade.getText()));
                     selecionado.setCurso(txtCurso.getText());
-                    selecionado.setNotaFinal(Float.parseFloat(txtNotaFinal.getText().replace(",", ".")));
+                    selecionado.setNotaFinal(
+                            Float.parseFloat(
+                                    txtNotaFinal.getText().replace(",", ".")
+                            )
+                    );
 
-                    alunoDAO.atualizar(selecionado);
+                    estudante.atualizar(selecionado);
                     atualizarMensagem("Dados atualizados com sucesso!", false);
                     carregarAlunos();
                 }
             }
+
         } else {
             atualizarMensagem("Selecione um aluno para atualizar!", true);
         }
     }
-
     @FXML
     private void btnLimparAction(ActionEvent event) {
         txtID.clear();
@@ -125,7 +133,7 @@ public class MainController {
         txtIdade.clear();
         txtCurso.clear();
         txtNotaFinal.clear();
-        lblMensagem.setText(""); // Limpa a mensagem também
+        lblMensagem.setText("");
     }
 
     private boolean validarCampos() {
@@ -146,7 +154,7 @@ public class MainController {
 
     @FXML
     private void carregarAlunos() {
-        ArrayList<AlunoDTO> lista = alunoDAO.listar();
+        ArrayList<AlunoDTO> lista = estudante.listar();
         tblAlunos.setItems(FXCollections.observableArrayList(lista));
     }
 
@@ -170,7 +178,7 @@ public class MainController {
             txtIdade.setText(String.valueOf(selecionado.getIdade()));
             txtCurso.setText(selecionado.getCurso());
             txtNotaFinal.setText(String.valueOf(selecionado.getNotaFinal()));
-            lblMensagem.setText(""); // Limpa mensagem ao selecionar novo
+            lblMensagem.setText("");
         }
     }
 }

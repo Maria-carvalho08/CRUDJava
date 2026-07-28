@@ -1,4 +1,7 @@
-package com.template;
+package com.template.model.dao;
+
+import com.template.model.dto.AlunoDTO;
+import com.template.model.Conexao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -6,6 +9,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.template.util.DialogUtil.showConfirmation;
 
 public class AlunoDAO {
 
@@ -104,6 +109,7 @@ public class AlunoDAO {
 
             logger.log(Level.SEVERE,
                     "Erro ao excluir aluno: " + e.getMessage(), e);
+
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.template;
+package com.template.model.dto;
 
 public class AlunoDTO {
     private int id;

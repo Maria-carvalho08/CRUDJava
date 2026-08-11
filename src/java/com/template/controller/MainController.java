@@ -140,7 +140,7 @@ public class MainController {
         if (txtNome.getText().isEmpty() || txtIdade.getText().isEmpty() ||
                 txtCurso.getText().isEmpty() || txtNotaFinal.getText().isEmpty()) {
             atualizarMensagem("Preencha todos os campos!", true);
-            return false;
+            return false; B
         }
         try {
             Integer.parseInt(txtIdade.getText());

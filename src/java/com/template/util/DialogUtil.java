@@ -8,7 +8,6 @@ import java.util.Optional;
 public class DialogUtil {
 
     public static boolean showConfirmation(String titulo, String mensagem) {
-
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 
         alert.setTitle(titulo);
@@ -19,6 +18,24 @@ public class DialogUtil {
 
         return resultado.isPresent() && resultado.get() == ButtonType.OK;
     }
+
+    public static void showError(String titulo, String mensagem) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensagem);
+
+        alert.showAndWait();
+    }
+
+    public static void showInfo(String titulo, String mensagem) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensagem);
+
+        alert.showAndWait();
+    }
 }
-
-

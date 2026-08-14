@@ -1,17 +1,16 @@
 package com.template.controller;
 
-import com.template.model.dao.AlunoDAO;
+import com.template.Service.AlunoService;
 import com.template.model.dto.AlunoDTO;
 import com.template.util.DialogUtil;
+import com.template.validator.AlunosValidator;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 public class MainController {
 
@@ -25,22 +24,14 @@ public class MainController {
     @FXML private TableColumn<AlunoDTO, Float> colNotaFinal;
     @FXML private Label lblMensagem;
 
-    AlunoDAO estudante = new AlunoDAO();
+    private AlunoService alunoService = new AlunoService();
 
-    // Função para atualizar o Label de mensagem com cor
-    private void atualizarMensagem(String texto, boolean erro) {
+    private void atualizarMensagem(String texto) {
         lblMensagem.setText(texto);
-        if (erro) {
-            lblMensagem.setTextFill(Color.BLACK);
-        } else {
-            lblMensagem.setTextFill(Color.BLACK);
-        }
     }
 
-    // NOVO: Atalho para a tecla ENTER
     @FXML
     private void onEnterPressed(ActionEvent event) {
-        // Se o ID estiver preenchido, ele tenta atualizar, senão tenta salvar novo
         if (txtID.getText() != null && !txtID.getText().isEmpty()) {
             btnAtualizarAction(null);
         } else {
@@ -50,82 +41,133 @@ public class MainController {
 
     @FXML
     private void btnSalvarAction(ActionEvent event) {
-        if (validarCampos()) {
-            try {
-                AlunoDTO aluno = new AlunoDTO(
-                        0,
-                        txtNome.getText(),
-                        Integer.parseInt(txtIdade.getText()),
-                        txtCurso.getText(),
-                        Float.parseFloat(txtNotaFinal.getText().replace(",", "."))
-                );
-                estudante.inserir(aluno);
-                atualizarMensagem("Aluno cadastrado com sucesso!", false);
-                carregarAlunos();
-                btnLimparAction(null);
-            } catch (Exception e) {
-                atualizarMensagem("Erro ao salvar: " + e.getMessage(), true);
-            }
+
+        if (!AlunosValidator.validarCampos(
+                txtNome.getText(),
+                txtIdade.getText(),
+                txtCurso.getText(),
+                txtNotaFinal.getText())) {
+
+            atualizarMensagem("Preencha todos os campos corretamente!");
+            return;
+        }
+
+        try {
+            AlunoDTO aluno = new AlunoDTO(
+                    0,
+                    txtNome.getText(),
+                    Integer.parseInt(txtIdade.getText()),
+                    txtCurso.getText(),
+                    Float.parseFloat(
+                            txtNotaFinal.getText().replace(",", ".")
+                    )
+            );
+
+            alunoService.inserir(aluno);
+
+            atualizarMensagem("Aluno cadastrado com sucesso!");
+
+            carregarAlunos();
+            btnLimparAction(null);
+
+        } catch (Exception e) {
+            atualizarMensagem(
+                    "Erro ao salvar: " + e.getMessage()
+            );
         }
     }
 
     @FXML
     private void btnDeletarAction(ActionEvent event) {
-        AlunoDTO selecionado = tblAlunos.getSelectionModel().getSelectedItem();
+
+        AlunoDTO selecionado =
+                tblAlunos.getSelectionModel().getSelectedItem();
 
         if (selecionado != null) {
 
             boolean confirmou = DialogUtil.showConfirmation(
                     "Confirmar Exclusão",
-                    "Tem certeza que deseja excluir o aluno: " + selecionado.getNome() + "?"
+                    "Tem certeza que deseja excluir o aluno: "
+                            + selecionado.getNome() + "?"
             );
 
             if (confirmou) {
-                estudante.excluir(selecionado.getId());
-                atualizarMensagem("Aluno excluído com sucesso!", false);
+
+                alunoService.excluir(selecionado.getId());
+
+                atualizarMensagem(
+                        "Aluno excluído com sucesso!"
+                );
+
                 carregarAlunos();
                 btnLimparAction(null);
             }
 
         } else {
-            atualizarMensagem("Selecione um aluno para excluir!", true);
+            atualizarMensagem(
+                    "Selecione um aluno para excluir!"
+            );
         }
     }
 
     @FXML
     private void btnAtualizarAction(ActionEvent event) {
-        AlunoDTO selecionado = tblAlunos.getSelectionModel().getSelectedItem();
+
+        AlunoDTO selecionado =
+                tblAlunos.getSelectionModel().getSelectedItem();
 
         if (selecionado != null) {
 
-            if (validarCampos()) {
+            if (!AlunosValidator.validarCampos(
+                    txtNome.getText(),
+                    txtIdade.getText(),
+                    txtCurso.getText(),
+                    txtNotaFinal.getText())) {
 
-                boolean confirmou = DialogUtil.showConfirmation(
-                        "Confirmar Atualização",
-                        "Deseja salvar as alterações para "
-                                + selecionado.getNome() + "?"
+                atualizarMensagem(
+                        "Preencha todos os campos corretamente!"
+                );
+                return;
+            }
+
+            boolean confirmou = DialogUtil.showConfirmation(
+                    "Confirmar Atualização",
+                    "Deseja salvar as alterações para "
+                            + selecionado.getNome() + "?"
+            );
+
+            if (confirmou) {
+
+                selecionado.setNome(txtNome.getText());
+
+                selecionado.setIdade(
+                        Integer.parseInt(txtIdade.getText())
                 );
 
-                if (confirmou) {
-                    selecionado.setNome(txtNome.getText());
-                    selecionado.setIdade(Integer.parseInt(txtIdade.getText()));
-                    selecionado.setCurso(txtCurso.getText());
-                    selecionado.setNotaFinal(
-                            Float.parseFloat(
-                                    txtNotaFinal.getText().replace(",", ".")
-                            )
-                    );
+                selecionado.setCurso(txtCurso.getText());
 
-                    estudante.atualizar(selecionado);
-                    atualizarMensagem("Dados atualizados com sucesso!", false);
-                    carregarAlunos();
-                }
+                selecionado.setNotaFinal(
+                        Float.parseFloat(
+                                txtNotaFinal.getText().replace(",", ".")
+                        )
+                );
+
+                alunoService.atualizar(selecionado);
+
+                atualizarMensagem(
+                        "Dados atualizados com sucesso!"
+                );
+
+                carregarAlunos();
             }
 
         } else {
-            atualizarMensagem("Selecione um aluno para atualizar!", true);
+            atualizarMensagem(
+                    "Selecione um aluno para atualizar!"
+            );
         }
     }
+
     @FXML
     private void btnLimparAction(ActionEvent event) {
         txtID.clear();
@@ -136,48 +178,73 @@ public class MainController {
         lblMensagem.setText("");
     }
 
-    private boolean validarCampos() {
-        if (txtNome.getText().isEmpty() || txtIdade.getText().isEmpty() ||
-                txtCurso.getText().isEmpty() || txtNotaFinal.getText().isEmpty()) {
-            atualizarMensagem("Preencha todos os campos!", true);
-            return false; B
-        }
-        try {
-            Integer.parseInt(txtIdade.getText());
-            Float.parseFloat(txtNotaFinal.getText().replace(",", "."));
-        } catch (NumberFormatException e) {
-            atualizarMensagem("Idade ou Nota com formato inválido!", true);
-            return false;
-        }
-        return true;
-    }
-
     @FXML
     private void carregarAlunos() {
-        ArrayList<AlunoDTO> lista = estudante.listar();
-        tblAlunos.setItems(FXCollections.observableArrayList(lista));
+        ArrayList<AlunoDTO> lista = alunoService.listar();
+
+        tblAlunos.setItems(
+                FXCollections.observableArrayList(lista)
+        );
     }
 
     @FXML
     private void initialize() {
-        colID.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
-        colIdade.setCellValueFactory(new PropertyValueFactory<>("idade"));
-        colCurso.setCellValueFactory(new PropertyValueFactory<>("curso"));
-        colNotaFinal.setCellValueFactory(new PropertyValueFactory<>("notaFinal"));
-        tblAlunos.setOnMouseClicked(event -> selecionarAluno());
+
+        colID.setCellValueFactory(
+                new PropertyValueFactory<>("id")
+        );
+
+        colNome.setCellValueFactory(
+                new PropertyValueFactory<>("nome")
+        );
+
+        colIdade.setCellValueFactory(
+                new PropertyValueFactory<>("idade")
+        );
+
+        colCurso.setCellValueFactory(
+                new PropertyValueFactory<>("curso")
+        );
+
+        colNotaFinal.setCellValueFactory(
+                new PropertyValueFactory<>("notaFinal")
+        );
+
+        tblAlunos.setOnMouseClicked(
+                event -> selecionarAluno()
+        );
+
         carregarAlunos();
     }
 
     @FXML
     private void selecionarAluno() {
-        AlunoDTO selecionado = tblAlunos.getSelectionModel().getSelectedItem();
+
+        AlunoDTO selecionado =
+                tblAlunos.getSelectionModel().getSelectedItem();
+
         if (selecionado != null) {
-            txtID.setText(String.valueOf(selecionado.getId()));
-            txtNome.setText(selecionado.getNome());
-            txtIdade.setText(String.valueOf(selecionado.getIdade()));
-            txtCurso.setText(selecionado.getCurso());
-            txtNotaFinal.setText(String.valueOf(selecionado.getNotaFinal()));
+
+            txtID.setText(
+                    String.valueOf(selecionado.getId())
+            );
+
+            txtNome.setText(
+                    selecionado.getNome()
+            );
+
+            txtIdade.setText(
+                    String.valueOf(selecionado.getIdade())
+            );
+
+            txtCurso.setText(
+                    selecionado.getCurso()
+            );
+
+            txtNotaFinal.setText(
+                    String.valueOf(selecionado.getNotaFinal())
+            );
+
             lblMensagem.setText("");
         }
     }

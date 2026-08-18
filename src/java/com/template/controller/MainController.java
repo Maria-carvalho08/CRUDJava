@@ -68,7 +68,15 @@ public class MainController {
             atualizarMensagem("Aluno cadastrado com sucesso!");
 
             carregarAlunos();
-            btnLimparAction(null);
+
+            alunoService.limparCampos(
+                    txtID,
+                    txtNome,
+                    txtIdade,
+                    txtCurso,
+                    txtNotaFinal,
+                    lblMensagem
+            );
 
         } catch (Exception e) {
             atualizarMensagem(
@@ -100,7 +108,15 @@ public class MainController {
                 );
 
                 carregarAlunos();
-                btnLimparAction(null);
+
+                alunoService.limparCampos(
+                        txtID,
+                        txtNome,
+                        txtIdade,
+                        txtCurso,
+                        txtNotaFinal,
+                        lblMensagem
+                );
             }
 
         } else {
@@ -170,16 +186,20 @@ public class MainController {
 
     @FXML
     private void btnLimparAction(ActionEvent event) {
-        txtID.clear();
-        txtNome.clear();
-        txtIdade.clear();
-        txtCurso.clear();
-        txtNotaFinal.clear();
-        lblMensagem.setText("");
+
+        alunoService.limparCampos(
+                txtID,
+                txtNome,
+                txtIdade,
+                txtCurso,
+                txtNotaFinal,
+                lblMensagem
+        );
     }
 
     @FXML
     private void carregarAlunos() {
+
         ArrayList<AlunoDTO> lista = alunoService.listar();
 
         tblAlunos.setItems(

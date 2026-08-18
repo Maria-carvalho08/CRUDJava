@@ -2,6 +2,8 @@ package com.template.Service;
 
 import com.template.model.dao.AlunoDAO;
 import com.template.model.dto.AlunoDTO;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 
 import java.util.ArrayList;
 
@@ -23,5 +25,21 @@ public class AlunoService {
 
     public ArrayList<AlunoDTO> listar() {
         return alunoDAO.listar();
+    }
+
+    public void limparCampos(
+            TextField txtID,
+            TextField txtNome,
+            TextField txtIdade,
+            TextField txtCurso,
+            TextField txtNotaFinal,
+            Label lblMensagem) {
+
+        txtID.clear();
+        txtNome.clear();
+        txtIdade.clear();
+        txtCurso.clear();
+        txtNotaFinal.clear();
+        lblMensagem.setText("");
     }
 }

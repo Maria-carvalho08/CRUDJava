@@ -1,9 +1,10 @@
 package com.template.controller;
 
-import com.template.Service.AlunoService;
+import com.template.Service.IAlunoService;
 import com.template.model.dto.AlunoDTO;
 import com.template.util.DialogUtil;
-import com.template.validator.AlunosValidator;
+import com.template.validator.IAlunosValidator;
+
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,6 +14,18 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.ArrayList;
 
 public class MainController {
+
+    private IAlunosValidator alunosValidator;
+
+    private IAlunoService alunoService;
+
+    public void setAlunoService(IAlunoService alunoService) {
+        this.alunoService = alunoService;
+    }
+
+    public void setAlunosValidator(IAlunosValidator alunosValidator) {
+        this.alunosValidator = alunosValidator;
+    }
 
     @FXML private Button btnSalvar, btnLimpar, btnDeletar, btnAtualizar;
     @FXML private TextField txtNome, txtID, txtIdade, txtCurso, txtNotaFinal;
@@ -24,17 +37,20 @@ public class MainController {
     @FXML private TableColumn<AlunoDTO, Float> colNotaFinal;
     @FXML private Label lblMensagem;
 
-    private AlunoService alunoService = new AlunoService();
-
     private void atualizarMensagem(String texto) {
         lblMensagem.setText(texto);
     }
 
     @FXML
     private void onEnterPressed(ActionEvent event) {
-        if (txtID.getText() != null && !txtID.getText().isEmpty()) {
+
+        if (txtID.getText() != null &&
+                !txtID.getText().isEmpty()) {
+
             btnAtualizarAction(null);
+
         } else {
+
             btnSalvarAction(null);
         }
     }
@@ -42,30 +58,31 @@ public class MainController {
     @FXML
     private void btnSalvarAction(ActionEvent event) {
 
-        if (!AlunosValidator.validarCampos(
+        if (!alunosValidator.validarCampos(
                 txtNome.getText(),
                 txtIdade.getText(),
                 txtCurso.getText(),
                 txtNotaFinal.getText())) {
 
-            atualizarMensagem("Preencha todos os campos corretamente!");
+            atualizarMensagem(
+                    alunosValidator.getMensagemErro()
+            );
+
             return;
         }
 
         try {
-            AlunoDTO aluno = new AlunoDTO(
-                    0,
+
+            alunoService.inserir(
                     txtNome.getText(),
-                    Integer.parseInt(txtIdade.getText()),
+                    txtIdade.getText(),
                     txtCurso.getText(),
-                    Float.parseFloat(
-                            txtNotaFinal.getText().replace(",", ".")
-                    )
+                    txtNotaFinal.getText()
             );
 
-            alunoService.inserir(aluno);
-
-            atualizarMensagem("Aluno cadastrado com sucesso!");
+            atualizarMensagem(
+                    "Aluno cadastrado com sucesso!"
+            );
 
             carregarAlunos();
 
@@ -79,6 +96,7 @@ public class MainController {
             );
 
         } catch (Exception e) {
+
             atualizarMensagem(
                     "Erro ao salvar: " + e.getMessage()
             );
@@ -89,19 +107,23 @@ public class MainController {
     private void btnDeletarAction(ActionEvent event) {
 
         AlunoDTO selecionado =
-                tblAlunos.getSelectionModel().getSelectedItem();
+                tblAlunos.getSelectionModel()
+                        .getSelectedItem();
 
         if (selecionado != null) {
 
-            boolean confirmou = DialogUtil.showConfirmation(
-                    "Confirmar Exclusão",
-                    "Tem certeza que deseja excluir o aluno: "
-                            + selecionado.getNome() + "?"
-            );
+            boolean confirmou =
+                    DialogUtil.showConfirmation(
+                            "Confirmar Exclusão",
+                            "Tem certeza que deseja excluir o aluno: "
+                                    + selecionado.getNome() + "?"
+                    );
 
             if (confirmou) {
 
-                alunoService.excluir(selecionado.getId());
+                alunoService.excluir(
+                        selecionado.getId()
+                );
 
                 atualizarMensagem(
                         "Aluno excluído com sucesso!"
@@ -120,6 +142,7 @@ public class MainController {
             }
 
         } else {
+
             atualizarMensagem(
                     "Selecione um aluno para excluir!"
             );
@@ -130,45 +153,40 @@ public class MainController {
     private void btnAtualizarAction(ActionEvent event) {
 
         AlunoDTO selecionado =
-                tblAlunos.getSelectionModel().getSelectedItem();
+                tblAlunos.getSelectionModel()
+                        .getSelectedItem();
 
         if (selecionado != null) {
 
-            if (!AlunosValidator.validarCampos(
+            if (!alunosValidator.validarCampos(
                     txtNome.getText(),
                     txtIdade.getText(),
                     txtCurso.getText(),
                     txtNotaFinal.getText())) {
 
                 atualizarMensagem(
-                        "Preencha todos os campos corretamente!"
+                        alunosValidator.getMensagemErro()
                 );
+
                 return;
             }
 
-            boolean confirmou = DialogUtil.showConfirmation(
-                    "Confirmar Atualização",
-                    "Deseja salvar as alterações para "
-                            + selecionado.getNome() + "?"
-            );
+            boolean confirmou =
+                    DialogUtil.showConfirmation(
+                            "Confirmar Atualização",
+                            "Deseja salvar as alterações para "
+                                    + selecionado.getNome() + "?"
+                    );
 
             if (confirmou) {
 
-                selecionado.setNome(txtNome.getText());
-
-                selecionado.setIdade(
-                        Integer.parseInt(txtIdade.getText())
+                alunoService.atualizar(
+                        selecionado,
+                        txtNome.getText(),
+                        txtIdade.getText(),
+                        txtCurso.getText(),
+                        txtNotaFinal.getText()
                 );
-
-                selecionado.setCurso(txtCurso.getText());
-
-                selecionado.setNotaFinal(
-                        Float.parseFloat(
-                                txtNotaFinal.getText().replace(",", ".")
-                        )
-                );
-
-                alunoService.atualizar(selecionado);
 
                 atualizarMensagem(
                         "Dados atualizados com sucesso!"
@@ -178,6 +196,7 @@ public class MainController {
             }
 
         } else {
+
             atualizarMensagem(
                     "Selecione um aluno para atualizar!"
             );
@@ -198,9 +217,10 @@ public class MainController {
     }
 
     @FXML
-    private void carregarAlunos() {
+    public void carregarAlunos() {
 
-        ArrayList<AlunoDTO> lista = alunoService.listar();
+        ArrayList<AlunoDTO> lista =
+                alunoService.listar();
 
         tblAlunos.setItems(
                 FXCollections.observableArrayList(lista)
@@ -233,20 +253,21 @@ public class MainController {
         tblAlunos.setOnMouseClicked(
                 event -> selecionarAluno()
         );
-
-        carregarAlunos();
     }
 
     @FXML
     private void selecionarAluno() {
 
         AlunoDTO selecionado =
-                tblAlunos.getSelectionModel().getSelectedItem();
+                tblAlunos.getSelectionModel()
+                        .getSelectedItem();
 
         if (selecionado != null) {
 
             txtID.setText(
-                    String.valueOf(selecionado.getId())
+                    String.valueOf(
+                            selecionado.getId()
+                    )
             );
 
             txtNome.setText(
@@ -254,7 +275,9 @@ public class MainController {
             );
 
             txtIdade.setText(
-                    String.valueOf(selecionado.getIdade())
+                    String.valueOf(
+                            selecionado.getIdade()
+                    )
             );
 
             txtCurso.setText(
@@ -262,7 +285,9 @@ public class MainController {
             );
 
             txtNotaFinal.setText(
-                    String.valueOf(selecionado.getNotaFinal())
+                    String.valueOf(
+                            selecionado.getNotaFinal()
+                    )
             );
 
             lblMensagem.setText("");

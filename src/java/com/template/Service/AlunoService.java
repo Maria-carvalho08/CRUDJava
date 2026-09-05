@@ -7,26 +7,65 @@ import javafx.scene.control.TextField;
 
 import java.util.ArrayList;
 
-public class AlunoService {
+public class AlunoService implements IAlunoService {
 
-    private AlunoDAO alunoDAO = new AlunoDAO();
+    private AlunoDAO alunoDAO;
 
-    public void inserir(AlunoDTO aluno) {
+    public AlunoService(AlunoDAO alunoDAO) {
+        this.alunoDAO = alunoDAO;
+    }
+
+    @Override
+    public void inserir(
+            String nome,
+            String idade,
+            String curso,
+            String notaFinal) {
+
+        AlunoDTO aluno = new AlunoDTO(
+                0,
+                nome,
+                Integer.parseInt(idade),
+                curso,
+                Float.parseFloat(
+                        notaFinal.replace(",", ".")
+                )
+        );
+
         alunoDAO.inserir(aluno);
     }
 
+    @Override
     public void excluir(int id) {
         alunoDAO.excluir(id);
     }
 
-    public void atualizar(AlunoDTO aluno) {
+    @Override
+    public void atualizar(
+            AlunoDTO aluno,
+            String nome,
+            String idade,
+            String curso,
+            String notaFinal) {
+
+        aluno.setNome(nome);
+        aluno.setIdade(Integer.parseInt(idade));
+        aluno.setCurso(curso);
+        aluno.setNotaFinal(
+                Float.parseFloat(
+                        notaFinal.replace(",", ".")
+                )
+        );
+
         alunoDAO.atualizar(aluno);
     }
 
+    @Override
     public ArrayList<AlunoDTO> listar() {
         return alunoDAO.listar();
     }
 
+    @Override
     public void limparCampos(
             TextField txtID,
             TextField txtNome,

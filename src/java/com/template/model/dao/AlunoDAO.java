@@ -10,13 +10,12 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.template.util.DialogUtil.showConfirmation;
-
-public class AlunoDAO {
+public class AlunoDAO implements IAlunoDAO {
 
     private static final Logger logger =
             Logger.getLogger(AlunoDAO.class.getName());
 
+    @Override
     public void inserir(AlunoDTO aluno) {
 
         String sql =
@@ -34,11 +33,15 @@ public class AlunoDAO {
 
         } catch (Exception e) {
 
-            logger.log(Level.SEVERE,
-                    "Erro ao inserir aluno: " + e.getMessage(), e);
+            logger.log(
+                    Level.SEVERE,
+                    "Erro ao inserir aluno: " + e.getMessage(),
+                    e
+            );
         }
     }
 
+    @Override
     public ArrayList<AlunoDTO> listar() {
 
         ArrayList<AlunoDTO> lista = new ArrayList<>();
@@ -64,13 +67,17 @@ public class AlunoDAO {
 
         } catch (Exception e) {
 
-            logger.log(Level.SEVERE,
-                    "Erro ao listar alunos: " + e.getMessage(), e);
+            logger.log(
+                    Level.SEVERE,
+                    "Erro ao listar alunos: " + e.getMessage(),
+                    e
+            );
         }
 
         return lista;
     }
 
+    @Override
     public void atualizar(AlunoDTO aluno) {
 
         String sql =
@@ -89,11 +96,15 @@ public class AlunoDAO {
 
         } catch (Exception e) {
 
-            logger.log(Level.SEVERE,
-                    "Erro ao atualizar aluno: " + e.getMessage(), e);
+            logger.log(
+                    Level.SEVERE,
+                    "Erro ao atualizar aluno: " + e.getMessage(),
+                    e
+            );
         }
     }
 
+    @Override
     public void excluir(int id) {
 
         String sql = "DELETE FROM alunos WHERE id=?";
@@ -107,9 +118,11 @@ public class AlunoDAO {
 
         } catch (Exception e) {
 
-            logger.log(Level.SEVERE,
-                    "Erro ao excluir aluno: " + e.getMessage(), e);
-
+            logger.log(
+                    Level.SEVERE,
+                    "Erro ao excluir aluno: " + e.getMessage(),
+                    e
+            );
         }
     }
 }

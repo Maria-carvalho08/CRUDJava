@@ -1,6 +1,6 @@
 package com.template.Service;
 
-import com.template.model.dao.AlunoDAO;
+import com.template.model.dao.IAlunoDAO;
 import com.template.model.dto.AlunoDTO;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -9,9 +9,9 @@ import java.util.ArrayList;
 
 public class AlunoService implements IAlunoService {
 
-    private AlunoDAO alunoDAO;
+    private IAlunoDAO alunoDAO;
 
-    public AlunoService(AlunoDAO alunoDAO) {
+    public AlunoService(IAlunoDAO alunoDAO) {
         this.alunoDAO = alunoDAO;
     }
 

@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AlunoDAO implements IAlunoDAO {
-
+//implementa as operações utilizando o banco de dados
     private static final Logger logger =
             Logger.getLogger(AlunoDAO.class.getName());
 
@@ -21,7 +21,7 @@ public class AlunoDAO implements IAlunoDAO {
         String sql =
                 "INSERT INTO alunos (nome, idade, curso, nota_final) VALUES (?, ?, ?, ?)";
 
-        try (Connection con = Conexao.conectar();
+        try (Connection con = Conexao.conectar();//cria conexao com o banco
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, aluno.getNome());
@@ -97,8 +97,8 @@ public class AlunoDAO implements IAlunoDAO {
         } catch (Exception e) {
 
             logger.log(
-                    Level.SEVERE,
-                    "Erro ao atualizar aluno: " + e.getMessage(),
+                    Level.SEVERE,//informa se e um erro grave
+                    "Erro ao atualizar aluno: " + e.getMessage(),//registra detalhes do erro
                     e
             );
         }

@@ -6,8 +6,8 @@ import javafx.scene.control.TextField;
 
 import java.util.ArrayList;
 
-public interface IAlunoService {
-
+public interface IAlunoService {//interface da camada service
+//service e responsave por organizar os dados antes de mandar pro dao
     void inserir(
             String nome,
             String idade,

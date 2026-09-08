@@ -3,6 +3,7 @@ package com.template.controller;
 import com.template.Service.IAlunoService;
 import com.template.model.dto.AlunoDTO;
 import com.template.util.DialogUtil;
+import com.template.util.FormUtil;
 import com.template.validator.IAlunosValidator;
 
 import javafx.collections.FXCollections;
@@ -27,19 +28,54 @@ public class MainController {
         this.alunosValidator = alunosValidator;
     }
 
-    @FXML private Button btnSalvar, btnLimpar, btnDeletar, btnAtualizar;
-    @FXML private TextField txtNome, txtID, txtIdade, txtCurso, txtNotaFinal;
-    @FXML private TableView<AlunoDTO> tblAlunos;
-    @FXML private TableColumn<AlunoDTO, Integer> colID;
-    @FXML private TableColumn<AlunoDTO, String> colNome;
-    @FXML private TableColumn<AlunoDTO, Integer> colIdade;
-    @FXML private TableColumn<AlunoDTO, String> colCurso;
-    @FXML private TableColumn<AlunoDTO, Float> colNotaFinal;
-    @FXML private Label lblMensagem;
+    @FXML
+    private Button btnSalvar;
 
-    private void atualizarMensagem(String texto) {
-        lblMensagem.setText(texto);
-    }
+    @FXML
+    private Button btnLimpar;
+
+    @FXML
+    private Button btnDeletar;
+
+    @FXML
+    private Button btnAtualizar;
+
+    @FXML
+    private TextField txtNome;
+
+    @FXML
+    private TextField txtID;
+
+    @FXML
+    private TextField txtIdade;
+
+    @FXML
+    private TextField txtCurso;
+
+    @FXML
+    private TextField txtNotaFinal;
+
+    @FXML
+    private TableView<AlunoDTO> tblAlunos;
+
+    @FXML
+    private TableColumn<AlunoDTO, Integer> colID;
+
+    @FXML
+    private TableColumn<AlunoDTO, String> colNome;
+
+    @FXML
+    private TableColumn<AlunoDTO, Integer> colIdade;
+
+    @FXML
+    private TableColumn<AlunoDTO, String> colCurso;
+
+    @FXML
+    private TableColumn<AlunoDTO, Float> colNotaFinal;
+
+    @FXML
+    private Label lblMensagem;
+
 
     @FXML
     private void onEnterPressed(ActionEvent event) {
@@ -55,6 +91,7 @@ public class MainController {
         }
     }
 
+
     @FXML
     private void btnSalvarAction(ActionEvent event) {
 
@@ -62,11 +99,8 @@ public class MainController {
                 txtNome.getText(),
                 txtIdade.getText(),
                 txtCurso.getText(),
-                txtNotaFinal.getText())) {
-
-            atualizarMensagem(
-                    alunosValidator.getMensagemErro()
-            );
+                txtNotaFinal.getText(),
+                lblMensagem)) {
 
             return;
         }
@@ -80,7 +114,8 @@ public class MainController {
                     txtNotaFinal.getText()
             );
 
-            atualizarMensagem(
+            FormUtil.atualizarMensagem(
+                    lblMensagem,
                     "Aluno cadastrado com sucesso!"
             );
 
@@ -97,11 +132,13 @@ public class MainController {
 
         } catch (Exception e) {
 
-            atualizarMensagem(
+            FormUtil.atualizarMensagem(
+                    lblMensagem,
                     "Erro ao salvar: " + e.getMessage()
             );
         }
     }
+
 
     @FXML
     private void btnDeletarAction(ActionEvent event) {
@@ -125,7 +162,8 @@ public class MainController {
                         selecionado.getId()
                 );
 
-                atualizarMensagem(
+                FormUtil.atualizarMensagem(
+                        lblMensagem,
                         "Aluno excluído com sucesso!"
                 );
 
@@ -143,11 +181,13 @@ public class MainController {
 
         } else {
 
-            atualizarMensagem(
+            FormUtil.atualizarMensagem(
+                    lblMensagem,
                     "Selecione um aluno para excluir!"
             );
         }
     }
+
 
     @FXML
     private void btnAtualizarAction(ActionEvent event) {
@@ -162,11 +202,8 @@ public class MainController {
                     txtNome.getText(),
                     txtIdade.getText(),
                     txtCurso.getText(),
-                    txtNotaFinal.getText())) {
-
-                atualizarMensagem(
-                        alunosValidator.getMensagemErro()
-                );
+                    txtNotaFinal.getText(),
+                    lblMensagem)) {
 
                 return;
             }
@@ -188,7 +225,8 @@ public class MainController {
                         txtNotaFinal.getText()
                 );
 
-                atualizarMensagem(
+                FormUtil.atualizarMensagem(
+                        lblMensagem,
                         "Dados atualizados com sucesso!"
                 );
 
@@ -197,11 +235,13 @@ public class MainController {
 
         } else {
 
-            atualizarMensagem(
+            FormUtil.atualizarMensagem(
+                    lblMensagem,
                     "Selecione um aluno para atualizar!"
             );
         }
     }
+
 
     @FXML
     private void btnLimparAction(ActionEvent event) {
@@ -216,6 +256,7 @@ public class MainController {
         );
     }
 
+
     @FXML
     public void carregarAlunos() {
 
@@ -226,6 +267,7 @@ public class MainController {
                 FXCollections.observableArrayList(lista)
         );
     }
+
 
     @FXML
     private void initialize() {
@@ -254,6 +296,7 @@ public class MainController {
                 event -> selecionarAluno()
         );
     }
+
 
     @FXML
     private void selecionarAluno() {
@@ -290,7 +333,10 @@ public class MainController {
                     )
             );
 
-            lblMensagem.setText("");
+            FormUtil.atualizarMensagem(
+                    lblMensagem,
+                    ""
+            );
         }
     }
 }

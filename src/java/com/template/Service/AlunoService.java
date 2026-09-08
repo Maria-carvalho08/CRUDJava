@@ -8,7 +8,7 @@ import javafx.scene.control.TextField;
 import java.util.ArrayList;
 
 public class AlunoService implements IAlunoService {
-
+//service recebe os dados pra enviar pro dao
     private IAlunoDAO alunoDAO;
 
     public AlunoService(IAlunoDAO alunoDAO) {

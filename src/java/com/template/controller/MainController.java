@@ -20,11 +20,9 @@ public class MainController {
 
     private IAlunoService alunoService;
 
-    public void setAlunoService(IAlunoService alunoService) {
+    public MainController(IAlunoService alunoService,
+                          IAlunosValidator alunosValidator) {
         this.alunoService = alunoService;
-    }
-
-    public void setAlunosValidator(IAlunosValidator alunosValidator) {
         this.alunosValidator = alunosValidator;
     }
 
@@ -76,7 +74,6 @@ public class MainController {
     @FXML
     private Label lblMensagem;
 
-
     @FXML
     private void onEnterPressed(ActionEvent event) {
 
@@ -90,7 +87,6 @@ public class MainController {
             btnSalvarAction(null);
         }
     }
-
 
     @FXML
     private void btnSalvarAction(ActionEvent event) {
@@ -139,7 +135,6 @@ public class MainController {
         }
     }
 
-
     @FXML
     private void btnDeletarAction(ActionEvent event) {
 
@@ -187,7 +182,6 @@ public class MainController {
             );
         }
     }
-
 
     @FXML
     private void btnAtualizarAction(ActionEvent event) {
@@ -242,7 +236,6 @@ public class MainController {
         }
     }
 
-
     @FXML
     private void btnLimparAction(ActionEvent event) {
 
@@ -256,7 +249,6 @@ public class MainController {
         );
     }
 
-
     @FXML
     public void carregarAlunos() {
 
@@ -267,7 +259,6 @@ public class MainController {
                 FXCollections.observableArrayList(lista)
         );
     }
-
 
     @FXML
     private void initialize() {
@@ -296,7 +287,6 @@ public class MainController {
                 event -> selecionarAluno()
         );
     }
-
 
     @FXML
     private void selecionarAluno() {
@@ -340,3 +330,4 @@ public class MainController {
         }
     }
 }
+

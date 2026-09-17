@@ -54,6 +54,10 @@ public class AlunosValidator implements IAlunosValidator {
                 new IdadeValidador(idade)
         );
 
+        validadores.add(
+                new NotaValidador(notaFinal)
+        );
+
         for (Validador<String> validador : validadores) {
 
             if (!validador.validar(validador.getValor())) {

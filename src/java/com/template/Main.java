@@ -20,19 +20,18 @@ public class Main extends Application {
                         Main.class.getResource("main.fxml")
                 );
 
+        loader.setControllerFactory(
+                type -> new MainController(
+                        new AlunoService(new AlunoDAO()),
+                        new AlunosValidator()
+                )
+        );
+
         Scene scene =
                 new Scene(loader.load(), 600, 400);
 
         MainController controller =
                 loader.getController();
-
-        controller.setAlunoService(
-                new AlunoService(new AlunoDAO())
-        );
-
-        controller.setAlunosValidator(
-                new AlunosValidator()
-        );
 
         controller.carregarAlunos();
 
